@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Reflection" Version="4.3.0" />
+    <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="1.1.1" />
+    <PackageReference Include="Microsoft.DotNet.InternalAbstractions" Version="1.0.0" />
+    <Content Include="IMixinObject.cs" />
+    <Content Include="IMixinTypeGenerator.cs" />
+    <Content Include="MixinExtensionMethods.cs" />
+    <Content Include="MixinGenerationException.cs" />
+    <Content Include="MixinHelpers.cs" />
+    <Content Include="MixinImplAttribute.cs" />
+    <Content Include="MixinTypeGenerator.cs" />
+    <Content Include="Reflection\ArrayBuilder.cs" />
+    <Content Include="Reflection\AssemblyBuilderCache.cs" />
+    <Content Include="Reflection\AssemblyCache.cs" />
+    <Content Include="Reflection\EmitExtensionMethods.cs" />
+    <Content Include="Reflection\PropertyExtensionMethods.cs" />
+    <Content Include="Reflection\ReflectionExtensions.cs" />
+    <Content Include="Reflection\TypeFactory.cs" />
+    <Content Include="TypeFactoryContext.cs" />
+  </ItemGroup>
+</Project>
