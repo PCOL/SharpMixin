@@ -13,5 +13,8 @@
     <Content Include="Resources\SimpleType1.cs" />
     <Content Include="Resources\SimpleType2.cs" />
     <Content Include="Resources\ISimpleMixin.cs" />
+    <Content Include="Resources\TestTypeWithMethod1.cs" />
+    <Content Include="Resources\TestTypeWithMethod2.cs" />
+    <Content Include="Resources\IMixinWithMethods.cs" />
   </ItemGroup>
 </Project>

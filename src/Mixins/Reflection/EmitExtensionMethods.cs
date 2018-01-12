@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2017 P Collyer
+Copyright (c) 2018 P Collyer
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -354,101 +354,6 @@ namespace Mixins.Reflection
 
             return ilGen;
         }
-
-/*
-        /// <summary>
-        /// Emits the IL for a methods parameters.
-        /// </summary>
-        /// <param name="ilGen">The methods <see cref="ILGenerator"/>.</param>
-        /// <param name="methodContext">The <see cref="MethodBuilderContext"/> of the method being implemented.</param>
-        internal static ILGenerator EmitParameters(
-            this ILGenerator ilGen,
-            MethodBuilderContext methodContext)
-        {
-            int argStart = methodContext.IsStatic == false || methodContext.IsExtension == true ? 1 : 0;
-            int proxiedstart = methodContext.IsExtension == true ? 1 : 0;
-
-            for (int i = 0, argIndex = argStart, proxiedIndex = proxiedstart;
-                i < methodContext.Parameters.Length;
-                i++, argIndex++, proxiedIndex++)
-            {
-                var parm = methodContext.Parameters[i];
-                var parmType = parm.ParameterType;
-                var proxiedParm = methodContext.ProxiedParameters[proxiedIndex];
-                var proxiedParmType = proxiedParm.ParameterType;
-
-                if (parmType != proxiedParmType)
-                {
-                    // The parameter types do not match so we need to convert the parameter
-
-                    // Is this an out/ref parameter?
-                    if (parm.IsOut == true)
-                    {
-                        parmType = parmType.GetElementType();
-                        if (parmType.IsGenericParameter == true)
-                        {
-                            Type proxiedType = proxiedParmType.GetElementType();
-                            LocalBuilder parmValue = ilGen.DeclareLocal<object>();
-                            ilGen.Emit(OpCodes.Ldloca, parmValue);
-
-                            methodContext.AddOutParameter(argIndex, parmValue);
-                        }
-                        else if (parmType.IsInterface == true)
-                        {
-                            Type proxiedType = proxiedParmType.GetElementType();
-                            LocalBuilder parmValue = ilGen.DeclareLocal(proxiedType);
-                            ilGen.Emit(OpCodes.Ldloca, parmValue);
-
-                            methodContext.AddOutParameter(argIndex, parmValue);
-                        }
-                        else if (parmType.IsArray == true &&
-                            parmType.GetElementType().IsInterface == true)
-                        {
-                            Type proxiedType = proxiedParmType.GetElementType();
-                            LocalBuilder parmValue = ilGen.DeclareLocal(proxiedType);
-                            ilGen.Emit(OpCodes.Ldloca, parmValue);
-
-                            methodContext.AddOutParameter(argIndex, parmValue);
-                        }
-                        else
-                        {
-                            ilGen.ThrowException<InvalidOperationException>("Unable to determine adpater type");
-                        }
-                    }
-                    else if (typeof(Delegate).IsAssignableFrom(parmType))
-                    {
-                        var delType = new DelegateAdapterGenerator(methodContext.AdapterContext)
-                            .GenerateDelegateType(
-                                parmType,
-                                proxiedParmType);
-
-                        var funcCtor = delType.GetConstructor(new[] { parmType });
-
-                        ilGen.Emit(OpCodes.Ldarg, argIndex);
-                        ilGen.Emit(OpCodes.Newobj, funcCtor);
-                        ilGen.Emit(OpCodes.Callvirt, delType.GetMethod("Adapted"));
-                    }
-                    else
-                    {
-                        LocalBuilder parmValue = ilGen.DeclareLocal(parmType);
-                        ilGen.Emit(OpCodes.Ldarg, argIndex);
-                        ilGen.Emit(OpCodes.Stloc, parmValue);
-
-                        ilGen.EmitAdaptedResult(
-                            methodContext.AdapterContext,
-                            parmValue,
-                            parmType);
-                    }
-                }
-                else
-                {
-                    ilGen.Emit(OpCodes.Ldarg, argIndex);
-                }
-            }
-
-            return ilGen;
-        }
-*/
 
         /// <summary>
         /// Emits optimized IL to load parameters.

@@ -1,4 +1,28 @@
-﻿namespace Mixins
+﻿/*
+MIT License
+
+Copyright (c) 2018 P Collyer
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+namespace Mixins
 {
     using System;
     using System.Collections.Generic;
@@ -24,7 +48,7 @@
         }
 
         /// <summary>
-        /// Gets the name of a duck type.
+        /// Gets the name of a dynamic mixin type.
         /// </summary>
         /// <param name="mixinType">The mixin type.</param>
         /// <param name="baseTypes">The mixins base types.</param>
@@ -79,21 +103,20 @@
             Type[] baseTypes,
             IServiceProvider serviceProvider)
         {
-            Tuple<Type, Type[]> key = new Tuple<Type, Type[]>(mixinType, baseTypes);
-
-            Type adapterType = TypeFactory
+            Type actualType = TypeFactory
                 .Default
                 .GetType(TypeName(mixinType, baseTypes), true);
-            if (adapterType == null)
+
+            if (actualType == null)
             {
-                adapterType = this.GenerateMixinType(mixinType, baseTypes, serviceProvider);
+                actualType = this.GenerateMixinType(mixinType, baseTypes, serviceProvider);
             }
 
-            return adapterType;
+            return actualType;
         }
 
         /// <summary>
-        /// Generates the adapter type.
+        /// Generates the mixin type.
         /// </summary>
         /// <param name="mixinType">The interface type to implement.</param>
         /// <param name="baseTypes">The base types The mixin uses.</param>
@@ -116,7 +139,7 @@
                     typeof(object[]),
                     FieldAttributes.Private);
 
-            FieldBuilder dependencyResolverField = typeBuilder
+            FieldBuilder serviceProviderField = typeBuilder
                 .DefineField(
                     "serviceProvider",
                     typeof(IServiceProvider),
@@ -128,8 +151,10 @@
                 baseTypes,
                 serviceProvider,
                 instancesField,
-                dependencyResolverField);
+                serviceProviderField);
 
+            this.EmitMixinObjectInterface(typeBuilder, instancesField);
+            
             this.ImplementInterfaces(context);
 
             // Add a constructor to the type.
@@ -137,7 +162,7 @@
                 typeBuilder,
                 mixinType,
                 instancesField,
-                dependencyResolverField);
+                serviceProviderField);
 
             // Create the type.
             return typeBuilder
@@ -181,9 +206,42 @@
         }
 
         /// <summary>
-        /// Implements the adapter types interfaces on the adapted type.
+        /// Implements the <see cref="IMixinObject"/> interface on the mixin type.
         /// </summary>
-        /// <param name="context">The current adapter context.</param>
+        /// <param name="typeBuilder">The <see cref="TypeBuilder"/> use to construct the type.</param>
+        /// <param name="baseTypeField">The <see cref="FieldBuilder"/> which will hold the instances of the types that make up the mixin.</param>
+        private void EmitMixinObjectInterface(
+            TypeBuilder typeBuilder,
+            FieldBuilder baseTypeField)
+        {
+            typeBuilder.AddInterfaceImplementation(typeof(IMixinObject));
+
+            PropertyBuilder propertyMixinObjects = typeBuilder
+                .DefineProperty(
+                    "MixinObjects",
+                    PropertyAttributes.None,
+                    typeof(object[]),
+                    Type.EmptyTypes);
+
+            MethodBuilder getMixinObjects = typeBuilder
+                .DefineMethod("get_MixinObjects",
+                    MethodAttributes.Virtual | MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot,
+                    CallingConventions.HasThis,
+                    typeof(object[]),
+                    Type.EmptyTypes);
+
+            ILGenerator il = getMixinObjects.GetILGenerator();
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Ldfld, baseTypeField);
+            il.Emit(OpCodes.Ret);
+
+            propertyMixinObjects.SetGetMethod(getMixinObjects);
+        }
+
+        /// <summary>
+        /// Implements the mixin types interfaces on the new type.
+        /// </summary>
+        /// <param name="context">The current type factory context.</param>
         private void ImplementInterfaces(TypeFactoryContext context)
         {
             Dictionary<string, MethodBuilder> propertyMethods = new Dictionary<string, MethodBuilder>();

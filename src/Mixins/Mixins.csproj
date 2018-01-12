@@ -13,7 +13,6 @@
     <Content Include="IMixinTypeGenerator.cs" />
     <Content Include="MixinExtensionMethods.cs" />
     <Content Include="MixinGenerationException.cs" />
-    <Content Include="MixinHelpers.cs" />
     <Content Include="MixinImplAttribute.cs" />
     <Content Include="MixinTypeGenerator.cs" />
     <Content Include="Reflection\ArrayBuilder.cs" />
