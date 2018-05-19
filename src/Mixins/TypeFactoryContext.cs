@@ -1,7 +1,7 @@
 ﻿/*
 MIT License
 
-Copyright (c) 2018 P Collyer
+Copyright (c) 2018 PCOL
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,7 @@ namespace Mixins
     using System.Linq;
     using System.Reflection;
     using System.Reflection.Emit;
+    using FluentIL;
 
     /// <summary>
     /// Represent contextual data used by <see cref="TypeFactory"/> implementations.
@@ -45,13 +46,13 @@ namespace Mixins
         /// <param name="serviceProviderField">The <see cref="FieldBuilder"/> that holds the <see cref="IServiceProvider"/> instance.</param>
         /// <param name="ctorBuilder">The <see cref="ConstructorBuilder"/> for the Itypes constructor.</paramI>
         public TypeFactoryContext(
-            TypeBuilder typeBuilder,
+            ITypeBuilder typeBuilder,
             Type newType,
             Type[] baseTypes,
             IServiceProvider serviceProvider,
-            FieldBuilder baseObjectField,
-            FieldBuilder serviceProviderField,
-            ConstructorBuilder ctorBuilder = null)
+            IFieldBuilder baseObjectField,
+            IFieldBuilder serviceProviderField,
+            IConstructorBuilder ctorBuilder = null)
         {
             this.TypeBuilder = typeBuilder;
             this.NewType = newType;
@@ -65,7 +66,7 @@ namespace Mixins
         /// <summary>
         ///  Gets the <see cref="TypeBuilder"/>
         /// </summary>
-        public TypeBuilder TypeBuilder { get; }
+        public ITypeBuilder TypeBuilder { get; }
 
         /// <summary>
         /// Gets the new type.
@@ -85,17 +86,17 @@ namespace Mixins
         /// <summary>
         /// Gets the <see cref="FieldBuilder"/> which will contain the base object instance.
         /// </summary>
-        public FieldBuilder BaseObjectField { get; }
+        public IFieldBuilder BaseObjectField { get; }
 
         /// <summary>
         /// Gets the <see cref="FieldBuilder"/> which will contain the dependency injection resolver.
         /// </summary>
-        public FieldBuilder ServiceProviderField { get; }
+        public IFieldBuilder ServiceProviderField { get; }
 
         /// <summary>
         /// Gets the <see cref="ConstructorBuilder"/> used to construct the new object.
         /// </summary>
-        public ConstructorBuilder ConstructorBuilder { get; }
+        public IConstructorBuilder ConstructorBuilder { get; }
 
         /// <summary>
         /// Creates a new <see cref="TypeFactoryContext"/> instance for a new interface type.

@@ -1,7 +1,7 @@
 ﻿/*
 MIT License
 
-Copyright (c) 2018 P Collyer
+Copyright (c) 2018 PCOL
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -31,8 +31,8 @@ namespace Mixins
     using System.Reflection.Emit;
     using System.Text;
     using System.Threading.Tasks;
-
-    using Mixins.Reflection;
+    using FluentIL;
+    using Reflection;
 
     /// <summary>
     /// A factory class for creating "mixin" types.
@@ -55,10 +55,7 @@ namespace Mixins
         /// <returns>The type name.</returns>
         public static string TypeName(Type mixinType, Type[] baseTypes)
         {
-            return string.Format(
-                "Dynamic.Mixins.{0}_{1}",
-                mixinType.Name,
-                string.Join("_", baseTypes.Select(t => t.Name)));
+            return $"Dynamic.Mixins.{mixinType.Name}_{string.Join("_", baseTypes.Select(t => t.Name))}";
         }
 
         /// <summary>
@@ -124,28 +121,24 @@ namespace Mixins
         /// <returns>A <see cref="Type"/> that represents the mixin.</returns>
         private Type GenerateMixinType(Type mixinType, Type[] baseTypes, IServiceProvider serviceProvider)
         {
-            TypeAttributes typeAttributes = TypeAttributes.Class | TypeAttributes.Public;
-
-            TypeBuilder typeBuilder = TypeFactory
+            var typeBuilder = TypeFactory
                 .Default
-                .ModuleBuilder
-                .DefineType(
-                    TypeName(mixinType, baseTypes),
-                    typeAttributes);
+                .NewType(TypeName(mixinType, baseTypes))
+                .Class()
+                .Public()
+                .Implements<IMixinObject>();
 
-            FieldBuilder instancesField = typeBuilder
-                .DefineField(
-                    "baseTypes",
-                    typeof(object[]),
-                    FieldAttributes.Private);
+            this.ImplementInterfaces(typeBuilder, mixinType);
 
-            FieldBuilder serviceProviderField = typeBuilder
-                .DefineField(
-                    "serviceProvider",
-                    typeof(IServiceProvider),
-                    FieldAttributes.Private);
+            var instancesField = typeBuilder
+                .NewField<object[]>("baseTypes")
+                .Private();
 
-            TypeFactoryContext context = new TypeFactoryContext(
+            var serviceProviderField = typeBuilder
+                .NewField<IServiceProvider>("serviceProvider")
+                .Private();
+
+            var context = new TypeFactoryContext(
                 typeBuilder,
                 mixinType,
                 baseTypes,
@@ -154,7 +147,7 @@ namespace Mixins
                 serviceProviderField);
 
             this.EmitMixinObjectInterface(typeBuilder, instancesField);
-            
+
             this.ImplementInterfaces(context);
 
             // Add a constructor to the type.
@@ -166,8 +159,7 @@ namespace Mixins
 
             // Create the type.
             return typeBuilder
-                .CreateTypeInfo()
-                .AsType();
+                .CreateType();
         }
 
         /// <summary>
@@ -178,31 +170,30 @@ namespace Mixins
         /// <param name="baseTypesField">The <see cref="FieldBuilder"/> which will hold the instances of the base types.</param>
         /// <param name="serviceProviderField">The <see cref="FieldBuilder"/> which will hold the instance of the dependency injection resolver.</param>
         private void EmitConstructor(
-            TypeBuilder typeBuilder,
+            ITypeBuilder typeBuilder,
             Type mixinType,
-            FieldBuilder baseTypesField,
-            FieldBuilder serviceProviderField)
+            IFieldBuilder baseTypesField,
+            IFieldBuilder serviceProviderField)
         {
-            ConstructorBuilder constructorBuilder = typeBuilder
-                .DefineConstructor(
-                    MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName,
-                    CallingConventions.HasThis,
-                    new[] { typeof(object[]), typeof(IServiceProvider) });
+            var constructorBuilder = typeBuilder
+                .NewConstructor()
+                .Public()
+                .HideBySig()
+                .SpecialName()
+                .RTSpecialName()
+                .CallingConvention(CallingConventions.HasThis)
+                .Param<object[]>("instances")
+                .Param<IServiceProvider>("serviceProvider");
 
-            constructorBuilder.DefineParameter(1, ParameterAttributes.None, "instances");
-            constructorBuilder.DefineParameter(2, ParameterAttributes.None, "serviceProvider");
-
-            ILGenerator il = constructorBuilder.GetILGenerator();
-
-            il.Emit(OpCodes.Ldarg_0);
-            il.Emit(OpCodes.Ldarg_1);
-            il.Emit(OpCodes.Stfld, baseTypesField);
-
-            il.Emit(OpCodes.Ldarg_0);
-            il.Emit(OpCodes.Ldarg_2);
-            il.Emit(OpCodes.Stfld, serviceProviderField);
-
-            il.Emit(OpCodes.Ret);
+            constructorBuilder
+                .Body()
+                .LdArg0()
+                .LdArg1()
+                .StFld(baseTypesField)
+                .LdArg0()
+                .LdArg2()
+                .StFld(serviceProviderField)
+                .Ret();
         }
 
         /// <summary>
@@ -211,31 +202,35 @@ namespace Mixins
         /// <param name="typeBuilder">The <see cref="TypeBuilder"/> use to construct the type.</param>
         /// <param name="baseTypeField">The <see cref="FieldBuilder"/> which will hold the instances of the types that make up the mixin.</param>
         private void EmitMixinObjectInterface(
-            TypeBuilder typeBuilder,
-            FieldBuilder baseTypeField)
+            ITypeBuilder typeBuilder,
+            IFieldBuilder baseTypeField)
         {
-            typeBuilder.AddInterfaceImplementation(typeof(IMixinObject));
+            var propertyMixinObjects = typeBuilder
+                .NewProperty<object[]>("MixinObjects")
+                .Getter(m => m
+                    .Public()
+                    .Virtual()
+                    .HideBySig()
+                    .NewSlot()
+                    .CallingConvention(CallingConventions.HasThis)
+                    .Body(il => il
+                        .LdArg0()
+                        .LdFld(baseTypeField)
+                        .Ret()));
+        }
 
-            PropertyBuilder propertyMixinObjects = typeBuilder
-                .DefineProperty(
-                    "MixinObjects",
-                    PropertyAttributes.None,
-                    typeof(object[]),
-                    Type.EmptyTypes);
+        private void ImplementInterfaces(ITypeBuilder typeBuilder, Type type)
+        {
+            typeBuilder.Implements(type);
 
-            MethodBuilder getMixinObjects = typeBuilder
-                .DefineMethod("get_MixinObjects",
-                    MethodAttributes.Virtual | MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot,
-                    CallingConventions.HasThis,
-                    typeof(object[]),
-                    Type.EmptyTypes);
-
-            ILGenerator il = getMixinObjects.GetILGenerator();
-            il.Emit(OpCodes.Ldarg_0);
-            il.Emit(OpCodes.Ldfld, baseTypeField);
-            il.Emit(OpCodes.Ret);
-
-            propertyMixinObjects.SetGetMethod(getMixinObjects);
+            Type[] implementedInterfaces = type.GetInterfaces();
+            if (implementedInterfaces.IsNullOrEmpty() == false)
+            {
+                foreach (Type iface in implementedInterfaces)
+                {
+                    this.ImplementInterfaces(typeBuilder, iface);
+                }
+            }
         }
 
         /// <summary>
@@ -244,86 +239,86 @@ namespace Mixins
         /// <param name="context">The current type factory context.</param>
         private void ImplementInterfaces(TypeFactoryContext context)
         {
-            Dictionary<string, MethodBuilder> propertyMethods = new Dictionary<string, MethodBuilder>();
-
-            Type[] implementedInterfaces = context.NewType.GetInterfaces();
-            if (implementedInterfaces.IsNullOrEmpty() == false)
-            {
-                foreach (Type iface in implementedInterfaces)
-                {
-                    TypeFactoryContext ifaceContext = context.CreateTypeFactoryContext(iface);
-                    this.ImplementInterfaces(ifaceContext);
-                }
-            }
-
-            context.TypeBuilder.AddInterfaceImplementation(context.NewType);
+            var propertyMethods = new Dictionary<string, IMethodBuilder>();
 
             foreach (var memberInfo in context.NewType.GetMembers())
             {
                 if (memberInfo.MemberType == MemberTypes.Method)
                 {
-                    MethodInfo methodInfo = (MethodInfo)memberInfo;
-                    Type[] methodArgs = methodInfo.GetParameters().Select(p => p.ParameterType).ToArray();
+                    var methodInfo = (MethodInfo)memberInfo;
+                    var methodArgs = methodInfo.GetParameters().Select(p => p.ParameterType).ToArray();
 
                     if (methodInfo.ContainsGenericParameters == true)
                     {
-                        Type[] genericArguments = methodInfo.GetGenericArguments();
+                        var genericArguments = methodInfo.GetGenericArguments();
 
-                        MethodBuilder methodBuilder = context
+                        var methodBuilder = context
                             .TypeBuilder
-                            .DefineMethod(
-                                methodInfo.Name,
-                                MethodAttributes.Public | MethodAttributes.Virtual,
-                                methodInfo.ReturnType,
-                                methodArgs);
+                            .NewMethod(methodInfo.Name)
+                            .Public()
+                            .Virtual()
+                            .Params(methodArgs)
+                            .Returns(methodInfo.ReturnType);
 
-                        GenericTypeParameterBuilder[] genericTypeParameterBuilder = methodBuilder
-                            .DefineGenericParameters(genericArguments.Select(t => t.Name).ToArray());
+                        methodBuilder
+                            .NewGenericParameters(
+                                genericArguments.Select(t => t.Name).ToArray(),
+                                (gps) =>
+                                {
+                                    for (int m = 0; m < gps.Length; m++)
+                                    {
+                                        gps[m].Attributes = genericArguments[m].GetTypeInfo().GenericParameterAttributes;
+                                    }
+                                });
 
-                        for (int m = 0; m < genericTypeParameterBuilder.Length; m++)
-                        {
-                            genericTypeParameterBuilder[m].SetGenericParameterAttributes(genericArguments[m].GetTypeInfo().GenericParameterAttributes);
-                        }
-
-                        ILGenerator methodIL = methodBuilder.GetILGenerator();
+                        var methodIL = methodBuilder.Body();
 
                         if (context.NewType.GetMethod(methodInfo.Name, methodInfo.GetGenericArguments()) == null)
                         {
                             // Throw NotImplementedException
-                            ConstructorInfo notImplementedCtor = typeof(NotImplementedException).GetConstructor(new Type[0]);
-                            methodIL.Emit(OpCodes.Newobj, notImplementedCtor);
-                            methodIL.Emit(OpCodes.Throw);
+                            methodIL.ThrowException<NotImplementedException>("Not Implemented");
                             continue;
                         }
 
-                        LocalBuilder methodReturn = null;
+                        ILocal methodReturn = null;
                         if (methodInfo.ReturnType != typeof(void))
                         {
-                            methodReturn = methodIL.DeclareLocal(methodInfo.ReturnType);
+                            methodIL.DeclareLocal(methodInfo.ReturnType, out methodReturn);
                         }
 
-                        methodIL.Emit(OpCodes.Ldarg_0);
-                        methodIL.Emit(OpCodes.Ldfld, context.BaseObjectField);
-                        methodIL.EmitLoadParameters(methodInfo);
+                        methodIL
+                            .LdArg0()
+                            .LdFld(context.BaseObjectField)
+                            .EmitLoadParameters(methodInfo);
+
                         MethodInfo callMethod1 = context.BaseObjectField.FieldType.GetMethod(memberInfo.Name, genericArguments);
                         MethodInfo callMethod = context.BaseObjectField.FieldType.GetMethod(memberInfo.Name, methodArgs).MakeGenericMethod(genericArguments);
-                        methodIL.Emit(OpCodes.Callvirt, callMethod1);
+                        methodIL
+                            .CallVirt(callMethod1);
 
                         if (methodReturn != null)
                         {
-                            methodIL.Emit(OpCodes.Stloc_0);
-                            methodIL.Emit(OpCodes.Ldloc_0);
+                            methodIL
+                                .StLoc(methodReturn)
+                                .LdLoc(methodReturn);
                         }
 
-                        methodIL.Emit(OpCodes.Ret);
+                        methodIL.Ret();
                     }
                     else
                     {
                         string name = methodInfo.Name;
                         MethodAttributes attrs = methodInfo.Attributes & ~MethodAttributes.Abstract;
-                        MethodBuilder methodBuilder = context.TypeBuilder.DefineMethod(methodInfo.Name, attrs, methodInfo.ReturnType, methodArgs);
+                        var methodBuilder = context
+                            .TypeBuilder
+                            .NewMethod(
+                                methodInfo.Name,
+                                attrs,
+                                CallingConventions.HasThis,
+                                methodInfo.ReturnType)
+                            .Params(methodArgs);
 
-                        ILGenerator methodIL = methodBuilder.GetILGenerator();
+                        var methodIL = methodBuilder.Body();
 
                         this.BuildMethod(context, methodInfo, methodIL, methodArgs);
 
@@ -335,18 +330,19 @@ namespace Mixins
                 }
                 else if (memberInfo.MemberType == MemberTypes.Property)
                 {
-                    PropertyBuilder propertyBuilder = context.TypeBuilder.DefineProperty(memberInfo.Name, PropertyAttributes.SpecialName, ((PropertyInfo)memberInfo).PropertyType, null);
+                    var propertyBuilder = context
+                        .TypeBuilder
+                        .NewProperty(memberInfo.Name, ((PropertyInfo)memberInfo).PropertyType)
+                        .Attributes(PropertyAttributes.SpecialName);
 
-                    MethodBuilder getMethod;
-                    if (propertyMethods.TryGetValue(memberInfo.PropertyGetName(), out getMethod) == true)
+                    if (propertyMethods.TryGetValue(memberInfo.PropertyGetName(), out IMethodBuilder getMethod) == true)
                     {
-                        propertyBuilder.SetGetMethod(getMethod);
+                        propertyBuilder.GetMethod = getMethod;
                     }
 
-                    MethodBuilder setMethod;
-                    if (propertyMethods.TryGetValue(memberInfo.PropertySetName(), out setMethod) == true)
+                    if (propertyMethods.TryGetValue(memberInfo.PropertySetName(), out IMethodBuilder setMethod) == true)
                     {
-                        propertyBuilder.SetSetMethod(setMethod);
+                        propertyBuilder.SetMethod = setMethod;
                     }
                 }
             }
@@ -359,7 +355,7 @@ namespace Mixins
         /// <param name="methodInfo">The <see cref="MethodInfo"/> of the method being implemented.</param>
         /// <param name="methodIL">The methods <see cref="ILGenerator"/>.</param>
         /// <param name="methodArgs">An array containing the methods argument types.</param>
-        private void BuildMethod(TypeFactoryContext context, MethodInfo methodInfo, ILGenerator methodIL, Type[] methodArgs)
+        private void BuildMethod(TypeFactoryContext context, MethodInfo methodInfo, IEmitter methodIL, Type[] methodArgs)
         {
             string targetMemberName = methodInfo.Name;
             Type targetStaticType = null;
@@ -416,45 +412,49 @@ namespace Mixins
                 if (methodInfo.IsPropertyGet() == true &&
                     (field = context.NewType.GetField(methodInfo.Name.Substring(4))) != null)
                 {
-                    LocalBuilder sourceValue = methodIL.DeclareLocal(proxiedMethod.ReturnType);
-                    LocalBuilder fieldValue = methodIL.DeclareLocal(field.FieldType);
-                    LocalBuilder returnValue = methodIL.DeclareLocal(methodInfo.ReturnType);
+                    methodIL
+                        .DeclareLocal(proxiedMethod.ReturnType, out ILocal sourceValue)
+                        .DeclareLocal(field.FieldType, out ILocal fieldValue)
+                        .DeclareLocal(methodInfo.ReturnType, out ILocal returnValue)
 
-                    methodIL.Emit(OpCodes.Ldarg_0);
-                    methodIL.Emit(OpCodes.Ldfld, context.BaseObjectField);
-                    methodIL.Emit(OpCodes.Ldc_I4, index);
-                    methodIL.Emit(OpCodes.Ldelem_Ref);
-                    methodIL.Emit(OpCodes.Stloc, sourceValue);
+                        .LdArg0()
+                        .LdFld(context.BaseObjectField)
+                        .LdcI4(index)
+                        .LdElemRef()
+                        .StLoc(sourceValue)
 
-                    methodIL.Emit(OpCodes.Ldloc, sourceValue);
-                    methodIL.Emit(OpCodes.Ldfld, field);
-                    methodIL.Emit(OpCodes.Stloc, fieldValue);
+                        .LdLoc(sourceValue)
+                        .LdFld(field)
+                        .StLoc(fieldValue);
 
                     // Are the return types different?
                     if (field.FieldType != methodInfo.ReturnType)
                     {
                         // try casting...
-                        methodIL.Emit(OpCodes.Ldloc, fieldValue);
-                        methodIL.Emit(OpCodes.Castclass, methodInfo.ReturnType);
-                        methodIL.Emit(OpCodes.Stloc, returnValue);
+                        methodIL
+                            .LdLoc(fieldValue)
+                            .CastClass(methodInfo.ReturnType)
+                            .StLoc(returnValue);
                     }
 
-                    methodIL.Emit(OpCodes.Ldloc, fieldValue);
-                    methodIL.Emit(OpCodes.Ret);
+                    methodIL
+                        .LdLoc(fieldValue)
+                        .Ret();
                 }
 
                 // Is the desired method is a property setter and there is public field with same name?
                 else if (methodInfo.IsPropertySet() == true &&
                     (field = context.NewType.GetField(methodInfo.Name.Substring(4))) != null)
                 {
-                    methodIL.Emit(OpCodes.Ldarg_0);
-                    methodIL.Emit(OpCodes.Ldfld, context.BaseObjectField);
-                    methodIL.Emit(OpCodes.Ldc_I4, index);
-                    methodIL.Emit(OpCodes.Ldelem_Ref);
+                    methodIL
+                        .LdArg0()
+                        .LdFld(context.BaseObjectField)
+                        .LdcI4(index)
+                        .LdElemRef()
 
-                    methodIL.Emit(OpCodes.Ldarg_1);
-                    methodIL.Emit(OpCodes.Stfld, field);
-                    methodIL.Emit(OpCodes.Ret);
+                        .LdArg1()
+                        .StFld(field)
+                        .Ret();
                 }
                 else
                 {
@@ -465,7 +465,7 @@ namespace Mixins
                 return;
             }
 
-            LocalBuilder methodReturn = null;
+            ILocal methodReturn = null;
             if (methodInfo.ReturnType != typeof(void))
             {
                 // Do the return types match?
@@ -475,7 +475,7 @@ namespace Mixins
                 }
 
                 // Declare locals
-                methodReturn = methodIL.DeclareLocal(methodInfo.ReturnType);
+                methodIL.DeclareLocal(methodInfo.ReturnType, out methodReturn);
 
                 // hmm
                 // If this is a generic method changes it to a generic method of return type.
@@ -490,39 +490,43 @@ namespace Mixins
             // Is the proxied method static?
             if (proxiedMethod.IsStatic == true)
             {
-                methodIL.EmitLoadParameters(methodInfo);
-                methodIL.Emit(OpCodes.Call, proxiedMethod);
+                methodIL
+                    .EmitLoadParameters(methodInfo)
+                    .Call(proxiedMethod);
             }
             else
             {
                 // Is the adapted type a class?
                 if (context.BaseTypes[index].IsClass == true)
                 {
-                    methodIL.Emit(OpCodes.Ldarg_0);
-                    methodIL.Emit(OpCodes.Ldfld, context.BaseObjectField);
-                    methodIL.Emit(OpCodes.Ldc_I4, index);
-                    methodIL.Emit(OpCodes.Ldelem_Ref);
-                    methodIL.EmitLoadParameters(methodInfo);
-                    methodIL.Emit(OpCodes.Callvirt, proxiedMethod);
+                    methodIL
+                        .LdArg0()
+                        .LdFld(context.BaseObjectField)
+                        .LdcI4(index)
+                        .LdElemRef()
+                        .EmitLoadParameters(methodInfo)
+                        .CallVirt(proxiedMethod);
                 }
 
                 // Is the adapted type a value type?
                 else if (context.BaseTypes[index].IsValueType == true)
                 {
-                    methodIL.Emit(OpCodes.Ldarg_0);
-                    methodIL.Emit(OpCodes.Ldflda, context.BaseObjectField);
-                    methodIL.Emit(OpCodes.Ldloc, index);
-                    methodIL.Emit(OpCodes.Ldelem_Ref);
-                    methodIL.EmitLoadParameters(methodInfo);
-                    methodIL.Emit(OpCodes.Call, proxiedMethod);
+                    methodIL
+                        .LdArg0()
+                        .LdFlda(context.BaseObjectField)
+                        .LdcI4(index)
+                        .LdElemRef()
+                        .EmitLoadParameters(methodInfo)
+                        .Call(proxiedMethod);
                 }
             }
 
             // Does the method expect a return value?
             if (methodReturn != null)
             {
-                methodIL.Emit(OpCodes.Stloc, methodReturn);
-                methodIL.Emit(OpCodes.Ldloc, methodReturn);
+                methodIL
+                    .StLoc(methodReturn)
+                    .LdLoc(methodReturn);
             }
 
             methodIL.Emit(OpCodes.Ret);
