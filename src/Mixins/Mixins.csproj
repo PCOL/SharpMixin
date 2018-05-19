@@ -31,11 +31,8 @@
     <Content Include="MixinGenerationException.cs" />
     <Content Include="MixinImplAttribute.cs" />
     <Content Include="MixinTypeGenerator.cs" />
-    <Content Include="Reflection\AssemblyBuilderCache.cs" />
-    <Content Include="Reflection\AssemblyCache.cs" />
     <Content Include="Reflection\EmitExtensionMethods.cs" />
     <Content Include="Reflection\PropertyExtensionMethods.cs" />
-    <Content Include="Reflection\TypeFactory.cs" />
     <Content Include="TypeFactoryContext.cs" />
     <Content Include="ca.ruleset" />
   </ItemGroup>
