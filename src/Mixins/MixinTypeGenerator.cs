@@ -126,9 +126,8 @@ namespace Mixins
                 .NewType(TypeName(mixinType, baseTypes))
                 .Class()
                 .Public()
-                .Implements<IMixinObject>();
-
-            this.ImplementInterfaces(typeBuilder, mixinType);
+                .Implements<IMixinObject>()
+                .ImplementsInterfaces(mixinType);
 
             var instancesField = typeBuilder
                 .NewField<object[]>("baseTypes")
@@ -217,20 +216,6 @@ namespace Mixins
                         .LdArg0()
                         .LdFld(baseTypeField)
                         .Ret()));
-        }
-
-        private void ImplementInterfaces(ITypeBuilder typeBuilder, Type type)
-        {
-            typeBuilder.Implements(type);
-
-            Type[] implementedInterfaces = type.GetInterfaces();
-            if (implementedInterfaces.IsNullOrEmpty() == false)
-            {
-                foreach (Type iface in implementedInterfaces)
-                {
-                    this.ImplementInterfaces(typeBuilder, iface);
-                }
-            }
         }
 
         /// <summary>

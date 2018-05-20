@@ -87,5 +87,27 @@ namespace Mixins.Reflection
 
             return methodIL;
         }
+
+        /// <summary>
+        /// Implements the interface and any of it descendent interfaces.
+        /// </summary>
+        /// <param name="typeBuilder">A type builder.</param>
+        /// <param name="interfaceType">The interface type.</param>
+        /// <returns>The type builder.</returns>
+        public static ITypeBuilder ImplementsInterfaces(this ITypeBuilder typeBuilder, Type interfaceType)
+        {
+            typeBuilder.Implements(interfaceType);
+
+            Type[] implementedInterfaces = interfaceType.GetInterfaces();
+            if (implementedInterfaces.IsNullOrEmpty() == false)
+            {
+                foreach (Type type in implementedInterfaces)
+                {
+                    typeBuilder.ImplementsInterfaces(type);
+                }
+            }
+
+            return typeBuilder;
+        }
     }
 }
