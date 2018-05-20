@@ -4,7 +4,6 @@ namespace MixinsUnitTests.Resources
     {
         public int TestIntegerProperty { get; private set; }
 
-
         public void SetTestIntegerProperty(int value)
         {
             this.TestIntegerProperty = value;

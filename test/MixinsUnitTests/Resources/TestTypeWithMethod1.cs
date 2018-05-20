@@ -4,7 +4,6 @@ namespace MixinsUnitTests.Resources
     {
         public string TestStringProperty { get; private set; }
 
-
         public void SetTestStringProperty(string value)
         {
             this.TestStringProperty = value;
