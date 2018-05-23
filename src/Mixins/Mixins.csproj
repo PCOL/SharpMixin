@@ -9,8 +9,8 @@
     <Description>A contract based mixin library.</Description>
     <PackageReleaseNotes>Initial release</PackageReleaseNotes>
     <PackageTags>mixin dynamic</PackageTags>
-    <PackageProjectUrl>https://github.com/PCOL/SharpMixin</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/PCOL/SharpMixin/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/PCOL/Mixins</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/PCOL/Mixins/blob/master/LICENSE</PackageLicenseUrl>
     <TargetFramework>netstandard2.0</TargetFramework>
     <DebugType>portable</DebugType>
     <AssemblyName>SharpMixin</AssemblyName>
