@@ -1,0 +1,154 @@
+// ***** BenchmarkRunner: Start   *****
+// Found benchmarks:
+//   MixinBenchmarks.SimpleMixin: DefaultJob
+
+// Validating benchmarks:
+Assembly Benchmarks which defines benchmarks references non-optimized SharpMixin
+Assembly Benchmarks which defines benchmarks is non-optimized
+Benchmark was built without optimization enabled (most probably a DEBUG configuration). Please, build it in RELEASE.
+// ***** Building 1 benchmark(s) in Parallel: Start   *****
+// ***** Done, took 00:00:21 (21.65 sec)   *****
+// **************************
+// Benchmark: MixinBenchmarks.SimpleMixin: DefaultJob
+// *** Execute ***
+// Launch: 1 / 1
+Failed to set up high priority. Make sure you have the right permissions. Message: Permission denied
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// Runtime=.NET Core 2.0.0 (CoreCLR 4.6.00001.0, CoreFX 4.6.25519.03), 64bit RyuJIT
+// GC=Concurrent Workstation
+// Job: DefaultJob
+
+Pilot  1: 16 op, 1508799.00 ns, 94.2999 us/op
+Pilot  2: 32 op, 1523212.00 ns, 47.6004 us/op
+Pilot  3: 64 op, 2839410.00 ns, 44.3658 us/op
+Pilot  4: 128 op, 5425932.00 ns, 42.3901 us/op
+Pilot  5: 256 op, 11676699.00 ns, 45.6121 us/op
+Pilot  6: 512 op, 28444613.00 ns, 55.5559 us/op
+Pilot  7: 1024 op, 50557208.00 ns, 49.3723 us/op
+Pilot  8: 2048 op, 97581740.00 ns, 47.6473 us/op
+Pilot  9: 4096 op, 174433229.00 ns, 42.5862 us/op
+Pilot 10: 8192 op, 340878952.00 ns, 41.6112 us/op
+Pilot 11: 16384 op, 686713758.00 ns, 41.9137 us/op
+
+IdleWarmup  1: 16384 op, 119557.00 ns, 7.2972 ns/op
+IdleWarmup  2: 16384 op, 83161.00 ns, 5.0757 ns/op
+IdleWarmup  3: 16384 op, 83064.00 ns, 5.0698 ns/op
+IdleWarmup  4: 16384 op, 83388.00 ns, 5.0896 ns/op
+IdleWarmup  5: 16384 op, 83040.00 ns, 5.0684 ns/op
+IdleWarmup  6: 16384 op, 83136.00 ns, 5.0742 ns/op
+IdleWarmup  7: 16384 op, 84276.00 ns, 5.1438 ns/op
+IdleWarmup  8: 16384 op, 83088.00 ns, 5.0713 ns/op
+
+IdleTarget  1: 16384 op, 124416.00 ns, 7.5938 ns/op
+IdleTarget  2: 16384 op, 105216.00 ns, 6.4219 ns/op
+IdleTarget  3: 16384 op, 83556.00 ns, 5.0999 ns/op
+IdleTarget  4: 16384 op, 83352.00 ns, 5.0874 ns/op
+IdleTarget  5: 16384 op, 83088.00 ns, 5.0713 ns/op
+IdleTarget  6: 16384 op, 83221.00 ns, 5.0794 ns/op
+IdleTarget  7: 16384 op, 284653.00 ns, 17.3738 ns/op
+IdleTarget  8: 16384 op, 83172.00 ns, 5.0764 ns/op
+IdleTarget  9: 16384 op, 83376.00 ns, 5.0889 ns/op
+IdleTarget 10: 16384 op, 83052.00 ns, 5.0691 ns/op
+IdleTarget 11: 16384 op, 83100.00 ns, 5.0720 ns/op
+IdleTarget 12: 16384 op, 83052.00 ns, 5.0691 ns/op
+IdleTarget 13: 16384 op, 83100.00 ns, 5.0720 ns/op
+IdleTarget 14: 16384 op, 83160.00 ns, 5.0757 ns/op
+IdleTarget 15: 16384 op, 125580.00 ns, 7.6648 ns/op
+IdleTarget 16: 16384 op, 83076.00 ns, 5.0706 ns/op
+IdleTarget 17: 16384 op, 83028.00 ns, 5.0676 ns/op
+
+MainWarmup  1: 16384 op, 684861422.00 ns, 41.8006 us/op
+MainWarmup  2: 16384 op, 697831628.00 ns, 42.5923 us/op
+MainWarmup  3: 16384 op, 684503116.00 ns, 41.7788 us/op
+MainWarmup  4: 16384 op, 686227076.00 ns, 41.8840 us/op
+MainWarmup  5: 16384 op, 685605114.00 ns, 41.8460 us/op
+MainWarmup  6: 16384 op, 680111849.00 ns, 41.5107 us/op
+
+// BeforeMainRun
+MainTarget  1: 16384 op, 686229548.00 ns, 41.8841 us/op
+MainTarget  2: 16384 op, 675134766.00 ns, 41.2070 us/op
+MainTarget  3: 16384 op, 688039679.00 ns, 41.9946 us/op
+MainTarget  4: 16384 op, 674886294.00 ns, 41.1918 us/op
+MainTarget  5: 16384 op, 687094726.00 ns, 41.9369 us/op
+MainTarget  6: 16384 op, 674286928.00 ns, 41.1552 us/op
+MainTarget  7: 16384 op, 684376935.00 ns, 41.7711 us/op
+MainTarget  8: 16384 op, 679692617.00 ns, 41.4851 us/op
+MainTarget  9: 16384 op, 681239564.00 ns, 41.5796 us/op
+MainTarget 10: 16384 op, 686563040.00 ns, 41.9045 us/op
+MainTarget 11: 16384 op, 691327580.00 ns, 42.1953 us/op
+MainTarget 12: 16384 op, 707040703.00 ns, 43.1543 us/op
+MainTarget 13: 16384 op, 675652676.00 ns, 41.2386 us/op
+MainTarget 14: 16384 op, 695976233.00 ns, 42.4790 us/op
+MainTarget 15: 16384 op, 674656877.00 ns, 41.1778 us/op
+
+// AfterMainRun
+Result  1: 16384 op, 686128301.06 ns, 41.8779 us/op
+Result  2: 16384 op, 675033519.06 ns, 41.2008 us/op
+Result  3: 16384 op, 687938432.06 ns, 41.9884 us/op
+Result  4: 16384 op, 674785047.06 ns, 41.1856 us/op
+Result  5: 16384 op, 686993479.06 ns, 41.9308 us/op
+Result  6: 16384 op, 674185681.06 ns, 41.1490 us/op
+Result  7: 16384 op, 684275688.06 ns, 41.7649 us/op
+Result  8: 16384 op, 679591370.06 ns, 41.4790 us/op
+Result  9: 16384 op, 681138317.06 ns, 41.5734 us/op
+Result 10: 16384 op, 686461793.06 ns, 41.8983 us/op
+Result 11: 16384 op, 691226333.06 ns, 42.1891 us/op
+Result 12: 16384 op, 706939456.06 ns, 43.1482 us/op
+Result 13: 16384 op, 675551429.06 ns, 41.2324 us/op
+Result 14: 16384 op, 695874986.06 ns, 42.4728 us/op
+Result 15: 16384 op, 674555630.06 ns, 41.1716 us/op
+GC:  0 0 0 0 0
+
+// AfterAll
+
+Mean = 41.7508 us, StdErr = 0.1462 us (0.35%); N = 15, StdDev = 0.5661 us
+Min = 41.1490 us, Q1 = 41.2008 us, Median = 41.7649 us, Q3 = 41.9884 us, Max = 43.1482 us
+IQR = 0.7877 us, LowerFence = 40.0193 us, UpperFence = 43.1699 us
+ConfidenceInterval = [41.1456 us; 42.3560 us] (CI 99.9%), Margin = 0.6052 us (1.45% of Mean)
+Skewness = 0.84, Kurtosis = 3.01, MValue = 2
+
+// ***** BenchmarkRunner: Finish  *****
+
+// * Export *
+  BenchmarkDotNet.Artifacts/results/MixinBenchmarks-report.csv
+  BenchmarkDotNet.Artifacts/results/MixinBenchmarks-report-github.md
+  BenchmarkDotNet.Artifacts/results/MixinBenchmarks-report.html
+
+// * Detailed results *
+MixinBenchmarks.SimpleMixin: DefaultJob
+Runtime = .NET Core 2.0.0 (CoreCLR 4.6.00001.0, CoreFX 4.6.25519.03), 64bit RyuJIT; GC = Concurrent Workstation
+Mean = 41.7508 us, StdErr = 0.1462 us (0.35%); N = 15, StdDev = 0.5661 us
+Min = 41.1490 us, Q1 = 41.2008 us, Median = 41.7649 us, Q3 = 41.9884 us, Max = 43.1482 us
+IQR = 0.7877 us, LowerFence = 40.0193 us, UpperFence = 43.1699 us
+ConfidenceInterval = [41.1456 us; 42.3560 us] (CI 99.9%), Margin = 0.6052 us (1.45% of Mean)
+Skewness = 0.84, Kurtosis = 3.01, MValue = 2
+-------------------- Histogram --------------------
+[40.948 us ; 42.295 us) | @@@@@@@@@@@@@
+[42.295 us ; 43.349 us) | @@
+---------------------------------------------------
+
+Total time: 00:00:39 (39.5 sec)
+
+// * Summary *
+
+BenchmarkDotNet=v0.10.14, OS=galliumos 2.1
+Intel Celeron CPU N2840 2.16GHz, 1 CPU, 2 logical and 2 physical cores
+.NET Core SDK=2.0.0
+  [Host]     : .NET Core 2.0.0 (CoreCLR 4.6.00001.0, CoreFX 4.6.25519.03), 64bit RyuJIT DEBUG
+  DefaultJob : .NET Core 2.0.0 (CoreCLR 4.6.00001.0, CoreFX 4.6.25519.03), 64bit RyuJIT
+
+
+      Method |     Mean |     Error |    StdDev |
+------------ |---------:|----------:|----------:|
+ SimpleMixin | 41.75 us | 0.6052 us | 0.5661 us |
+
+// * Legends *
+  Mean   : Arithmetic mean of all measurements
+  Error  : Half of 99.9% confidence interval
+  StdDev : Standard deviation of all measurements
+  1 us   : 1 Microsecond (0.000001 sec)
+
+// ***** BenchmarkRunner: End *****
+// * Artifacts cleanup *

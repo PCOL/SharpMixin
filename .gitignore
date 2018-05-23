@@ -18,3 +18,6 @@ TestResults
 [Dd]ebug/
 [Rr]elease/
 x64/
+
+# Performance results
+[Rr]esults/

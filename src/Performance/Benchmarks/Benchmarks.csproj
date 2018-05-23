@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <CodeAnalysisRuleSet>../../../ca.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Moq" Version="4.8.1" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.10.14" />
+    <ProjectReference Include="..\..\Mixins\Mixins.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Program.cs" />
+    <Content Include="MixinBenchmarks.cs" />
+    <Content Include="AllowNonOptimized.cs" />
+    <Content Include="Resources\SimpleTypeB.cs" />
+    <Content Include="Resources\SimpleTypeA.cs" />
+    <Content Include="Resources\ISimpleTypeAB.cs" />
+  </ItemGroup>
+</Project>
