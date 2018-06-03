@@ -44,7 +44,7 @@ namespace Mixins
         /// <param name="serviceProvider">The current dependency injection service provider.</param>
         /// <param name="baseObjectField">The <see cref="FieldBuilder"/> that holds the base type instance.</param>
         /// <param name="serviceProviderField">The <see cref="FieldBuilder"/> that holds the <see cref="IServiceProvider"/> instance.</param>
-        /// <param name="ctorBuilder">The <see cref="ConstructorBuilder"/> for the Itypes constructor.</paramI>
+        /// <param name="ctorBuilder">The <see cref="ConstructorBuilder"/> for the Itypes constructor.</param>
         public TypeFactoryContext(
             ITypeBuilder typeBuilder,
             Type newType,

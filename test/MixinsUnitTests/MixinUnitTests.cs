@@ -4,9 +4,15 @@ namespace MixinsUnitTests
     using Mixins;
     using MixinsUnitTests.Resources;
 
+    /// <summary>
+    /// Simple mixin unit tests.
+    /// </summary>
     [TestClass]
     public class MixinUnitTests
     {
+        /// <summary>
+        /// Creates a simple property mixin.
+        /// </summary>
         [TestMethod]
         public void CreateSimplePropertyMixin()
         {
@@ -36,6 +42,9 @@ namespace MixinsUnitTests
             Assert.AreEqual(simpleType2, mixinObjects[1]);
         }
 
+        /// <summary>
+        /// Create a mixin with methods.
+        /// </summary>
         [TestMethod]
         public void CreateMixinWithMethods()
         {

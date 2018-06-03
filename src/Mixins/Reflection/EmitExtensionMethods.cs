@@ -39,8 +39,9 @@ namespace Mixins.Reflection
         /// <summary>
         /// Emits optimized IL to load parameters.
         /// </summary>
-        /// <param name="methodIL">The <see cref="ILGenerator"/> to use.</param>
+        /// <param name="methodIL">A <see cref="IEmitter"/> to use.</param>
         /// <param name="methodInfo">The <see cref="MethodInfo"/> to emit the parameters for.</param>
+        /// <returns>The <see cref="IEmitter"/> to use.</returns>
         public static IEmitter EmitLoadParameters(this IEmitter methodIL, MethodInfo methodInfo)
         {
             return methodIL.EmitLoadParameters(methodInfo.GetParameters());
@@ -49,8 +50,9 @@ namespace Mixins.Reflection
         /// <summary>
         /// Emits optimized IL to load parameters.
         /// </summary>
-        /// <param name="methodIL">The <see cref="ILGenerator"/> to use.</param>
+        /// <param name="methodIL">A <see cref="IEmitter"/> to use.</param>
         /// <param name="parameters">The parameters loads to emit.</param>
+        /// <returns>The <see cref="IEmitter"/> to use.</returns>
         public static IEmitter EmitLoadParameters(this IEmitter methodIL, ParameterInfo[] parameters)
         {
             for (int i = 0; i < parameters.Length; i++)
@@ -64,8 +66,9 @@ namespace Mixins.Reflection
         /// <summary>
         /// Emits optimized IL to load an argument.
         /// </summary>
-        /// <param name="methodIL">The <see cref="ILGenerator"/> to use.</param>
+        /// <param name="methodIL">A <see cref="IEmitter"/> to use.</param>
         /// <param name="index">The arguement index.</param>
+        /// <returns>The <see cref="IEmitter"/> to use.</returns>
         public static IEmitter EmitLdArg(this IEmitter methodIL, int index)
         {
             if (index == 0)

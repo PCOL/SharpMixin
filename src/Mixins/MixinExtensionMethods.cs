@@ -36,7 +36,6 @@ namespace Mixins
         /// <summary>
         /// Gets or sets the service provider to use.
         /// </summary>
-        /// <returns></returns>
         public static IServiceProvider Services { get; set; }
 
         /// <summary>
