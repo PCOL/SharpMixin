@@ -22,25 +22,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace Mixins
+namespace SharpMixin
 {
-    using System;
-
     /// <summary>
-    /// An attribute used to influence the mixins implementation.
+    /// Defines the <see cref="IMixinObject"/> interface.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Event)]
-    public class MixinImplAttribute
-        : Attribute
+    public interface IMixinObject
     {
         /// <summary>
-        /// Gets or sets the type that the method, property, or event should target a static member on.
+        /// Gets the objects which make up the mixin.
         /// </summary>
-        public Type TargetStaticType { get; set; }
-
-        /// <summary>
-        /// Gets or sets the name of the member being targeted.
-        /// </summary>
-        public string TargetMemberName { get; set; }
+        object[] MixinObjects { get; }
     }
 }

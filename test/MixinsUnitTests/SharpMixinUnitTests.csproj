@@ -10,7 +10,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0-preview-20170628-02" />
     <PackageReference Include="MSTest.TestAdapter" Version="1.1.18" />
     <PackageReference Include="MSTest.TestFramework" Version="1.1.18" />
-    <ProjectReference Include="..\..\src\Mixins\Mixins.csproj" />
+    <ProjectReference Include="..\..\src\SharpMixin\SharpMixin.csproj" />
     <Content Include="MixinUnitTests.cs" />
     <Content Include="Resources\SimpleType1.cs" />
     <Content Include="Resources\SimpleType2.cs" />

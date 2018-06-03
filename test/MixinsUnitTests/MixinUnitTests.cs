@@ -1,8 +1,8 @@
 namespace MixinsUnitTests
 {
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Mixins;
     using MixinsUnitTests.Resources;
+    using SharpMixin;
 
     /// <summary>
     /// Simple mixin unit tests.

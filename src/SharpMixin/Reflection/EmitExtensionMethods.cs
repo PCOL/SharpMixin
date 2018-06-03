@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace Mixins.Reflection
+namespace SharpMixin.Reflection
 {
     using System;
     using System.Collections.Generic;
